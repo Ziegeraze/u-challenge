@@ -8,35 +8,34 @@
 
 package coe.unosquare.benefits.order;
 
-import coe.unosquare.benefits.product.Product;
-import coe.unosquare.benefits.util.ProductGenerator;
+import coe.unosquare.benefits.ShoppingCart.ShoppingCart;
+import coe.unosquare.benefits.util.ShoppingCartGenerator;
 import org.junit.jupiter.api.Test;
-import java.util.Map;
 import static coe.unosquare.benefits.util.PayOrderSimulator.payOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OrderTest {
     @Test
     void orderWithVisaMoreThan10ProductsDiscountTest() {
-        Map<Product, Integer> products = ProductGenerator.generateProducts(15);
-        assertEquals(0.15, payOrder(products, "Visa"));
+        ShoppingCart shoppingCart = ShoppingCartGenerator.generate(15);
+        assertEquals(0.15, payOrder(shoppingCart, "Visa"));
     }
 
     @Test
     void orderWithVisa10ProductsDiscountTest() {
-        Map<Product, Integer> products = ProductGenerator.generateProducts(10);
-        assertEquals(0.15, payOrder(products, "Visa"));
+        ShoppingCart shoppingCart = ShoppingCartGenerator.generate(10);
+        assertEquals(0.15, payOrder(shoppingCart, "Visa"));
     }
 
     @Test
     void orderWithVisa7ProductsDiscountTest() {
-        Map<Product, Integer> products = ProductGenerator.generateProducts(7);
-        assertEquals(0.10, payOrder(products, "Visa"));
+        ShoppingCart shoppingCart = ShoppingCartGenerator.generate(7);
+        assertEquals(0.10, payOrder(shoppingCart, "Visa"));
     }
 
     @Test
     void orderWithVisaLessThan7ProductsDiscountTest() {
-        Map<Product, Integer> products = ProductGenerator.generateProducts(5);
-        assertEquals(0.05, payOrder(products, "Visa"));
+        ShoppingCart shoppingCart = ShoppingCartGenerator.generate(5);
+        assertEquals(0.05, payOrder(shoppingCart, "Visa"));
     }
 }

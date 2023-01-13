@@ -8,23 +8,23 @@
 
 package coe.unosquare.benefits.order;
 
-import coe.unosquare.benefits.product.Product;
-import java.util.Map;
+import coe.unosquare.benefits.ShoppingCart.ShoppingCart;
 
 /**
  * The type Order.
  */
 public class Order {
     /** Store the final list of products and quantity for each product. **/
-    private final Map<Product, Integer> products;
+    private final ShoppingCart shoppingCart;
+    private double discount;
 
     /**
      * Instantiates a new Order.
      *
-     * @param productsMap the list of products added to the order
+     * @param shoppingCart the list of products added to the order
      */
-    public Order(final Map<Product, Integer> productsMap) {
-        products = productsMap;
+    public Order(final ShoppingCart shoppingCart) {
+        this.shoppingCart = shoppingCart;
     }
 
     /**
@@ -34,51 +34,47 @@ public class Order {
      * @return the double
      */
     public Double pay(final String paymentType) {
-        Double discount;
         if (paymentType.equals("Visa")) {
-            if (products.values()
-                    .stream()
-                    .reduce(0, (totalProductCount, quantity) -> totalProductCount += quantity) >= 10) {
-                discount = 0.15;
-            } else if (products.values()
-                    .stream()
-                    .reduce(0, (totalProductCount, quantity) -> totalProductCount += quantity) >= 7) {
-                discount = 0.10;
-            } else {
-                discount = 0.05;
-            }
+            setVisaDiscount();
         } else if (paymentType.equals("Mastercard")) {
-            if (products.entrySet()
-                    .stream()
-                    .mapToDouble(product -> product.getKey().getPrice() * product.getValue())
-                    .sum() >= 100) {
-                discount = 0.17;
-            } else if (products.entrySet().stream()
-                    .mapToDouble(product -> product.getKey().getPrice() * product.getValue())
-                    .sum() >= 75) {
-                discount = 0.12;
-            } else {
-                discount = 0.08;
-            }
-        } else {
-            discount = 0.0;
+            setMastercardDiscount();
         }
-        double subtotal = products.entrySet()
-                            .stream()
-                            .mapToDouble(product -> product.getKey().getPrice() * product.getValue())
-                            .sum();
+
+        double subtotal = shoppingCart.getTotalPrice();
         return subtotal - subtotal * discount;
+    }
+
+    private void setVisaDiscount() {
+        if (shoppingCart.getTotalProductCount() >= 10) {
+            discount = 0.15;
+        } else if (shoppingCart.getTotalProductCount() >= 7) {
+            discount = 0.10;
+        } else {
+            discount = 0.05;
+        }
+    }
+
+    private void setMastercardDiscount() {
+        if (shoppingCart.getTotalPrice() >= 100) {
+            discount = 0.17;
+        } else if (shoppingCart.getTotalPrice() >= 75) {
+            discount = 0.12;
+        } else {
+            discount = 0.08;
+        }
     }
 
     /**
      * Print.
      */
     public void print() {
-         products.forEach((product, quantity) ->
-                 System.out.println("Product:{" + product.getName() + ","
-                         + product.getPrice() + ","
-                         + product.getType()
-                         + "},Quantity:" + quantity
-                         + ",Total:" + product.getPrice() * quantity));
+        shoppingCart.getProducts().forEach((product, quantity) ->
+                System.out.println("Product:{" + product.getName() + ","
+                        + product.getPrice() + ","
+                        + product.getType()
+                        + "},Quantity:" + quantity
+                        + ",Total:" + product.getPrice() * quantity));
+        System.out.println("Total product quantity: " + shoppingCart.getTotalProductCount());
+        System.out.println("Total price: " + shoppingCart.getTotalPrice());
     }
 }
